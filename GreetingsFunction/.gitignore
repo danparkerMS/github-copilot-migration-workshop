@@ -261,4 +261,8 @@ paket-files/
 
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
-*.pyclocal.settings.json
+*.pyc
+
+# Azure Functions local settings
+local.settings.json
+
