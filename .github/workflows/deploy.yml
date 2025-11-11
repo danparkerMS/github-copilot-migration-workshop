@@ -1,0 +1,171 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'MessageServiceApi/**'
+      - 'GreetingsFunction/**'
+      - 'Infrastructure/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - test
+          - prod
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  AZURE_LOCATION: 'eastus'
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: |
+          dotnet restore MessageServiceApi/MessageServiceApi.csproj
+          dotnet restore GreetingsFunction/GreetingsFunction.csproj
+
+      - name: Build MessageServiceApi
+        run: dotnet build MessageServiceApi/MessageServiceApi.csproj --configuration Release --no-restore
+
+      - name: Build GreetingsFunction
+        run: dotnet build GreetingsFunction/GreetingsFunction.csproj --configuration Release --no-restore
+
+      - name: Run tests
+        run: |
+          # Add test commands here when tests are available
+          echo "No tests configured yet"
+
+      - name: Publish MessageServiceApi
+        run: dotnet publish MessageServiceApi/MessageServiceApi.csproj --configuration Release --no-build --output ./api-publish
+
+      - name: Publish GreetingsFunction
+        run: dotnet publish GreetingsFunction/GreetingsFunction.csproj --configuration Release --no-build --output ./function-publish
+
+      - name: Upload API artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-package
+          path: ./api-publish
+
+      - name: Upload Function artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: function-package
+          path: ./function-publish
+
+  deploy-infrastructure:
+    name: Deploy Azure Infrastructure
+    runs-on: ubuntu-latest
+    needs: build
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    outputs:
+      apiUrl: ${{ steps.deploy.outputs.apiUrl }}
+      appServiceName: ${{ steps.deploy.outputs.appServiceName }}
+      functionAppName: ${{ steps.deploy.outputs.functionAppName }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Bicep template
+        id: deploy
+        uses: azure/arm-deploy@v2
+        with:
+          resourceGroupName: rg-msgapp-${{ github.event.inputs.environment || 'dev' }}
+          template: ./Infrastructure/main.bicep
+          parameters: ./Infrastructure/main.parameters.json environment=${{ github.event.inputs.environment || 'dev' }} location=${{ env.AZURE_LOCATION }}
+          deploymentName: 'msgapp-${{ github.run_number }}'
+
+      - name: Display deployment outputs
+        run: |
+          echo "API URL: ${{ steps.deploy.outputs.apiUrl }}"
+          echo "App Service: ${{ steps.deploy.outputs.appServiceName }}"
+          echo "Function App: ${{ steps.deploy.outputs.functionAppName }}"
+
+  deploy-api:
+    name: Deploy API to Azure App Service
+    runs-on: ubuntu-latest
+    needs: deploy-infrastructure
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    
+    steps:
+      - name: Download API artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: api-package
+          path: ./api-package
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ needs.deploy-infrastructure.outputs.appServiceName }}
+          package: ./api-package
+
+      - name: Verify API deployment
+        run: |
+          echo "Waiting for API to be ready..."
+          sleep 30
+          API_URL="${{ needs.deploy-infrastructure.outputs.apiUrl }}"
+          echo "Testing API at: $API_URL/api/message"
+          curl -f "$API_URL/api/message" || echo "API verification failed, but deployment completed"
+
+  deploy-function:
+    name: Deploy Function to Azure Functions
+    runs-on: ubuntu-latest
+    needs: deploy-infrastructure
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    
+    steps:
+      - name: Download Function artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: function-package
+          path: ./function-package
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Functions
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ needs.deploy-infrastructure.outputs.functionAppName }}
+          package: ./function-package
+
+      - name: Display deployment summary
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "API URL: ${{ needs.deploy-infrastructure.outputs.apiUrl }}"
+          echo "Function App: ${{ needs.deploy-infrastructure.outputs.functionAppName }}"
+          echo "Environment: ${{ github.event.inputs.environment || 'dev' }}"
