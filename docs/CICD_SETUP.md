@@ -2,6 +2,8 @@
 
 This guide explains how to set up and use the GitHub Actions CI/CD pipeline for deploying the application to Azure.
 
+> **🚀 Quick Start?** If you just need to get started quickly, see the [CI/CD Quick Reference](CICD_QUICK_REFERENCE.md).
+
 ## Table of Contents
 
 1. [Overview](#overview)
