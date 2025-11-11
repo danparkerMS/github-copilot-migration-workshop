@@ -1,5 +1,7 @@
 # Migration Complete! 🎉
 
+[![Deploy to Azure](https://github.com/danparkerMS/github-copilot-migration-workshop/actions/workflows/deploy.yml/badge.svg)](https://github.com/danparkerMS/github-copilot-migration-workshop/actions/workflows/deploy.yml)
+
 This application has been successfully migrated from .NET Framework 4.8.1 to modern .NET 8, using Azure App Service and Azure Functions.
 
 ## What Changed?
@@ -68,12 +70,23 @@ All documentation is in the `docs/` folder:
 
 - **[docs/README.md](docs/README.md)** - Overview of the migrated application
 - **[docs/LOCAL_TESTING_GUIDE.md](docs/LOCAL_TESTING_GUIDE.md)** - How to run and test locally
-- **[docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)** - How to deploy to Azure
+- **[docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)** - How to deploy to Azure manually
+- **[docs/CICD_SETUP.md](docs/CICD_SETUP.md)** - CI/CD pipeline setup and usage
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Architecture and design decisions
 
 ## 🌐 Deploy to Azure
 
-### Quick Deployment
+### Automated Deployment (Recommended)
+
+The application includes a complete CI/CD pipeline using GitHub Actions:
+
+- **Automatic**: Pushes to `main` branch trigger deployment
+- **Manual**: Run workflow from GitHub Actions tab
+- **Environments**: Support for dev, test, and prod
+
+See **[docs/CICD_SETUP.md](docs/CICD_SETUP.md)** for complete setup instructions.
+
+### Manual Deployment
 
 ```bash
 cd Infrastructure
@@ -99,6 +112,7 @@ See [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) for detailed steps.
 | **Monitoring** | Limited | Application Insights |
 | **Cost** | High (24/7 VMs) | Low (serverless + basic tier) |
 | **Scalability** | Manual | Automatic |
+| **Deployment** | Manual | Automated CI/CD |
 
 ## ✅ Migration Checklist
 
@@ -112,6 +126,9 @@ See [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) for detailed steps.
 - [x] Local testing validated
 - [x] CORS configured for Function → API communication
 - [x] Swagger/OpenAPI documentation added
+- [x] CI/CD pipeline configured with GitHub Actions
+- [x] Automated deployment to Azure on push to main
+- [x] Multi-environment support (dev/test/prod)
 
 ## 🎯 Success Criteria Met
 
@@ -221,14 +238,15 @@ The workshop demonstrates:
 - ✅ Implementing Infrastructure as Code
 - ✅ Following Azure best practices
 - ✅ Creating comprehensive documentation
+- ✅ Setting up automated CI/CD pipelines
 
 ## 📝 Next Steps
 
 1. **Local Testing**: Follow [docs/LOCAL_TESTING_GUIDE.md](docs/LOCAL_TESTING_GUIDE.md)
-2. **Deploy to Azure**: Follow [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)
-3. **Review Architecture**: Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-4. **Enhance Security**: Add authentication, Key Vault, Managed Identity
-5. **Set up CI/CD**: Automate deployments with GitHub Actions or Azure DevOps
+2. **Set up CI/CD**: Follow [docs/CICD_SETUP.md](docs/CICD_SETUP.md) to enable automated deployments
+3. **Deploy to Azure**: Use the CI/CD pipeline or follow [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)
+4. **Review Architecture**: Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+5. **Enhance Security**: Add authentication, Key Vault, Managed Identity
 
 ## 🤝 Credits
 
