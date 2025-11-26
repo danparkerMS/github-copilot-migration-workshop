@@ -77,22 +77,18 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   sku: {
     name: appServicePlanSku
   }
-  kind: 'linux'
-  properties: {
-    reserved: true
-  }
 }
 
 // App Service for MessageService API
 resource appService 'Microsoft.Web/sites@2022-09-01' = {
   name: appServiceName
   location: location
-  kind: 'app,linux'
+  kind: 'app'
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|8.0'
+      netFrameworkVersion: 'v8.0'
       alwaysOn: appServicePlanSku != 'F1' // Always On not available in Free tier
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
@@ -118,12 +114,12 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
 resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
   name: functionAppName
   location: location
-  kind: 'functionapp,linux'
+  kind: 'functionapp'
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'DOTNET-ISOLATED|8.0'
+      netFrameworkVersion: 'v8.0'
       alwaysOn: appServicePlanSku != 'F1' // Always On not available in Free tier
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
