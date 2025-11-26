@@ -23,7 +23,7 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
-  AZURE_LOCATION: 'eastus'
+  AZURE_LOCATION: 'centralus'
 
 jobs:
   build:
