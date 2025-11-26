@@ -21,7 +21,7 @@ param environment string = 'dev'
   'B1'  // Basic tier
   'S1'  // Standard tier
 ])
-param appServicePlanSku string = 'B1'
+param appServicePlanSku string = 'F1'
 
 // Variables
 var appServicePlanName = '${resourcePrefix}-plan-${environment}'
