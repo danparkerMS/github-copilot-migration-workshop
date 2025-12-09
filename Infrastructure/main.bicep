@@ -34,7 +34,7 @@ param dotnetVersion string = 'v8.0'
 // Variables
 var appServicePlanName = '${resourcePrefix}-plan-${environment}'
 var appServiceName = '${resourcePrefix}-api-${environment}'
-var functionAppName = '${resourcePrefix}-func-${environment}'
+//var functionAppName = '${resourcePrefix}-func-${environment}'
 var storageAccountName = '${toLower(resourcePrefix)}${toLower(environment)}${uniqueString(resourceGroup().id, deployment().name)}'
 var applicationInsightsName = '${resourcePrefix}-insights-${environment}'
 var logAnalyticsWorkspaceName = '${resourcePrefix}-logs-${environment}'
@@ -165,6 +165,25 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
     }
   }
 }*/
+
+/*
+{
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
+        }
+        {
+          'name': 'FUNCTIONS_EXTENSION_VERSION'
+          'value': '~4'
+        }
+        {
+          'name': 'FUNCTIONS_WORKER_RUNTIME'
+          'value': 'dotnet'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
+        }
+*/
 
 // Outputs
 output apiUrl string = 'https://${appService.properties.defaultHostName}'
