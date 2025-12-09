@@ -23,11 +23,19 @@ param environment string = 'dev'
 ])
 param appServicePlanSku string = 'B1'
 
+@description('The version of .NET to use')
+@allowed([
+  'v6.0'
+  'v7.0'
+  'v8.0'
+])
+param dotnetVersion string = 'v8.0'
+
 // Variables
 var appServicePlanName = '${resourcePrefix}-plan-${environment}'
 var appServiceName = '${resourcePrefix}-api-${environment}'
 var functionAppName = '${resourcePrefix}-func-${environment}'
-var storageAccountName = '${resourcePrefix}${environment}${uniqueString(resourceGroup().id)}'
+var storageAccountName = '${toLower(resourcePrefix)}${toLower(environment)}${uniqueString(resourceGroup().id, deployment().name)}'
 var applicationInsightsName = '${resourcePrefix}-insights-${environment}'
 var logAnalyticsWorkspaceName = '${resourcePrefix}-logs-${environment}'
 
@@ -88,7 +96,7 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
-      netFrameworkVersion: 'v8.0'
+      netFrameworkVersion: dotnetVersion
       alwaysOn: appServicePlanSku != 'F1' // Always On not available in Free tier
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
@@ -119,7 +127,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
-      netFrameworkVersion: 'v8.0'
+      netFrameworkVersion: dotnetVersion
       alwaysOn: appServicePlanSku != 'F1' // Always On not available in Free tier
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'

@@ -112,6 +112,16 @@ jobs:
           echo "App Service: ${{ steps.deploy.outputs.appServiceName }}"
           echo "Function App: ${{ steps.deploy.outputs.functionAppName }}"
 
+      - name: Assign Storage File Data SMB Share Contributor role
+        run: |
+          az role assignment create \
+            --assignee ${{ secrets.AZURE_CLIENT_ID }} \
+            --role "Storage File Data SMB Share Contributor" \
+            --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/rg-msgapp-${{ github.event.inputs.environment || 'dev' }}/providers/Microsoft.Storage/storageAccounts/${{ steps.deploy.outputs.storageAccountName }}
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
   deploy-api:
     name: Deploy API to Azure App Service
     runs-on: ubuntu-latest
