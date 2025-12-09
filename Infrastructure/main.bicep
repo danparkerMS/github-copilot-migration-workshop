@@ -34,7 +34,7 @@ param dotnetVersion string = 'v8.0'
 // Variables
 var appServicePlanName = '${resourcePrefix}-plan-${environment}'
 var appServiceName = '${resourcePrefix}-api-${environment}'
-//var functionAppName = '${resourcePrefix}-func-${environment}'
+var functionAppName = '${resourcePrefix}-func-${environment}'
 var storageAccountName = '${toLower(resourcePrefix)}${toLower(environment)}${uniqueString(resourceGroup().id, deployment().name)}'
 var applicationInsightsName = '${resourcePrefix}-insights-${environment}'
 var logAnalyticsWorkspaceName = '${resourcePrefix}-logs-${environment}'
