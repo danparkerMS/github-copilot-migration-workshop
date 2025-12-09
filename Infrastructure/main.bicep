@@ -119,7 +119,7 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
 }
 
 // Function App for scheduled task
-/*
+
 resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
   name: functionAppName
   location: location
@@ -135,13 +135,14 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${az.environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-          // bryan's version
+          //value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${az.environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          // Bryan's version
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
           }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${az.environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          //value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${az.environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
@@ -166,7 +167,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
       ]
     }
   }
-}*/
+}
 
 /*
 {
@@ -189,7 +190,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
 
 // Outputs
 output apiUrl string = 'https://${appService.properties.defaultHostName}'
-//output functionAppName string = functionApp.name
+output functionAppName string = functionApp.name
 output appServiceName string = appService.name
 output applicationInsightsName string = applicationInsights.name
-//output storageAccountName string = storageAccount.name
+output storageAccountName string = storageAccount.name
