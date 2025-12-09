@@ -119,6 +119,7 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
 }
 
 // Function App for scheduled task
+/*
 resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
   name: functionAppName
   location: location
@@ -163,11 +164,11 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
       ]
     }
   }
-}
+}*/
 
 // Outputs
 output apiUrl string = 'https://${appService.properties.defaultHostName}'
 output functionAppName string = functionApp.name
 output appServiceName string = appService.name
 output applicationInsightsName string = applicationInsights.name
-output storageAccountName string = storageAccount.name
+//output storageAccountName string = storageAccount.name
