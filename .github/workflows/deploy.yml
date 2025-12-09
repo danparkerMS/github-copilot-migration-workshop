@@ -112,14 +112,13 @@ jobs:
           echo "App Service: ${{ steps.deploy.outputs.appServiceName }}"
           echo "Function App: ${{ steps.deploy.outputs.functionAppName }}"
 
-      - name: Assign Storage Account Key Operator Service Role
+      - name: Assign Storage Blob Data Contributor role to Function App
         run: |
           az role assignment create \
-            --assignee ${{ secrets.AZURE_CLIENT_ID }} \
-            --role "Storage Account Key Operator Service Role" \
+            --assignee ${{ steps.deploy.outputs.functionAppPrincipalId }} \
+            --role "Storage Blob Data Contributor" \
             --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/rg-msgapp-${{ github.event.inputs.environment || 'dev' }}/providers/Microsoft.Storage/storageAccounts/${{ steps.deploy.outputs.storageAccountName }}
         env:
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
   deploy-api:
